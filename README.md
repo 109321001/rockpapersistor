@@ -17,3 +17,7 @@ user是主要玩家有buff
 
 creature 是劣等玩家甚麼狗屁特效沒有
 
+我們自闖史上最屌前無古人(((((""七段計分器""))))))(user左，creature right)
+
+但是creature 永遠不會達到七分所以user必贏
+
