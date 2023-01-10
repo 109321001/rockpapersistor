@@ -6,24 +6,43 @@ input reg [2:0] user
 ,output reg beep
 ,output reg [7:0] seg
 ,output reg [3:0]COM
+
+,output [7:0]	DATA_B
+,output reg [3:0] COMM
 );
 
 divfreq F0(CLK,CLK_div);
 divfreqtime V0(CLK,wiggle);
+divfreqf F1(CLK,face);
 
 int up,cp;
 reg [7:0] nu;
 reg [7:0] nc;
+
+parameter logic [7:0] H_Char [7:0]=
+	'{8'b00000000,
+	8'b11101111,
+	8'b11101111,
+	8'b11101111,
+	8'b11101111,
+	8'b11101111,
+	8'b11101111,
+	8'b00000000};
+
+bit [2:0] cnt;
 
 initial 
 	begin
 		beep=1'b0;
 		up=0;
 		cp=0;
+
+		cnt = 0;
 		
 		nu=8'b11111110;
 		nc=8'b11111110;
 		COM = 4'b1011;
+		DATA_B = 8'b00000000;
 	end
 
 
@@ -98,6 +117,25 @@ always@(posedge CLK_div)
 	else COM=4'b1111;	
 	
 
+//smile		
+	
+	
+always @(posedge face)
+	begin
+	if(up==7)
+	begin
+		if(cnt >= 7)
+			cnt = 0;
+		else
+			cnt = cnt + 1;
+		COMM = {1'b1, cnt};
+		DATA_B = H_Char[cnt];
+	end
+		else
+			DATA_B = 8'b00000000;
+	end
+
+	
 endmodule
 
 module divfreqtime(input CLK, output reg CLK_div);
@@ -119,6 +157,20 @@ reg [24:0] Count;
 always @(posedge CLK)
 begin
 if(Count > 250000)
+begin
+Count <= 25'b0;
+CLK_div <= ~CLK_div;
+end
+else
+Count <= Count + 1'b1;
+end
+endmodule
+
+module divfreqf(input CLK, output reg CLK_div);
+reg [24:0] Count;
+always @(posedge CLK)
+begin
+if(Count > 2500000)
 begin
 Count <= 25'b0;
 CLK_div <= ~CLK_div;
